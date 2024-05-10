@@ -206,8 +206,9 @@ if __name__ == "__main__":
         aio_df = pd.concat([aio_df, additional_df]).copy()
 
     # Remove
-    columns_checks = ["title", "phone", "email"]
-    df[columns_checks] = df[columns_checks].replace('nan', np.nan)
+    columns_checks = ["Job Title", "Phone", "Email"]
+    for c in columns_checks:
+        df[c] = df[c].replace('nan', np.nan)
 
     duplicates = aio_df["index"].duplicated()
     if duplicates.any():
