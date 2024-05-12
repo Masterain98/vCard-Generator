@@ -6,6 +6,10 @@ import qrcode
 import os
 
 
+def add_genmall_prefix(num: int) -> str:
+    return f"GM{str(num)}".replace(".0", "")
+
+
 def add_eb_prefix(num: int) -> str:
     return f"EB{str(num)}".replace(".0", "")
 
@@ -87,14 +91,15 @@ def ticket_type_unify(t_type: str) -> str:
             return_result = "General Admission 3-Day"
         else:
             print(f"Unknown Ticket Type: {t_type}")
-    elif "earlybird1day" in t_type:
-        return_result = "General Admission 1-Day"
-    elif "earlybird2day" in t_type:
-        return_result = "General Admission 2-Day"
-    elif "earlybird3day" in t_type:
-        return_result = "General Admission 3-Day"
-    elif "edu" in t_type:
-        return_result = "General Admission 3-Day"
+    elif "earlybird" in t_type:
+        if "1day" in t_type:
+            return_result = "General Admission 1-Day"
+        elif "2day" in t_type:
+            return_result = "General Admission 2-Day"
+        elif "3day" in t_type:
+            return_result = "General Admission 3-Day"
+        elif "booth" in t_type:
+            return_result = "General Admission 3-Day"
     elif "media" in t_type:
         return_result = "Media Partner"
     elif "speaker" in t_type:
@@ -105,6 +110,8 @@ def ticket_type_unify(t_type: str) -> str:
         return_result = "VC"
     elif "accessories" in t_type:
         return_result = ""
+    elif "edu" in t_type:
+        return_result = "General Admission 3-Day"
     else:
         print(f"Unknown Ticket Type: {t_type}")
     print(f"{t_type} -> {return_result}")
@@ -118,10 +125,10 @@ def make_qr_code_by_vcard_data(vcard_data: dict, save_path: str):
     phone = vcard_data.get("phone", "")
     email = vcard_data.get("email", "")
     organization = vcard_data.get("organization", "")
-    website_url = vcard_data.get("url", None)
-    github = vcard_data.get("github", None)
-    linkedin = vcard_data.get("linkedin", None)
-    twitter = vcard_data.get("twitter", None)
+    website_url = vcard_data.get("url", "")
+    github = vcard_data.get("github", "")
+    linkedin = vcard_data.get("linkedin", "")
+    twitter = vcard_data.get("twitter", "")
 
     qr = qrcode.QRCode(
         version=1,
@@ -153,6 +160,7 @@ END:VCARD'''
 
 
 if __name__ == "__main__":
+    os.makedirs("cache", exist_ok=True)
     luma_file_exists = os.path.exists("luma_full.csv")
     eb_file_exists = os.path.exists("eb_full.csv")
     additional_file_exists = os.path.exists("Additional Ticket List.xlsx")
@@ -196,6 +204,19 @@ if __name__ == "__main__":
     aio_df['Last Name'] = df['Last Name'].apply(lambda x: remove_special_characters(x))
     aio_df['Phone'] = df['Phone'].apply(lambda x: phone_number_process(x))
     aio_df['Ticket Type'] = df['Ticket Type'].apply(lambda x: ticket_type_unify(x))
+
+    # Genmall
+    """
+    df = pd.read_csv("genmall_full.csv")
+    df = df.reset_index()
+    df["index"] = df["index"].apply(add_genmall_prefix)
+    df["First Name"] = df["Billing Name"].apply(lambda x: name_process(x)[0])
+    df["Last Name"] = df["Billing Name"].apply(lambda x: name_process(x)[1])
+    df["Ticket Type"] = df["Lineitem name"].apply(lambda x: ticket_type_unify(x))
+    genmall_df = df[['index', 'First Name', 'Last Name', 'Email', 'Ticket Type']].copy()
+    genmall_df.to_excel("./cache/genmall_processed.xlsx", index=False)
+    aio_df = pd.concat([aio_df, genmall_df]).copy()
+    """
 
     # Additional ticket
     if additional_file_exists:
