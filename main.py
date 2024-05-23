@@ -233,10 +233,10 @@ if __name__ == "__main__":
 
     duplicates = aio_df["index"].duplicated()
     if duplicates.any():
-        print("存在重复数据")
+        print("Found duplicated data")
         print(aio_df[duplicates])
     else:
-        print("没有重复数据")
+        print("No duplicated data")
 
     ticket_type_counts = aio_df['Ticket Type'].value_counts()
     print(ticket_type_counts)
