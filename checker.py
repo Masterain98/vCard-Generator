@@ -1,4 +1,5 @@
 import pandas as pd
+from main import ticket_type_unify
 import os
 
 
@@ -18,4 +19,9 @@ def count_check():
             continue
 
 
-count_check()
+def make_badge_type_code(excel_file_path: str):
+    df = pd.read_excel(excel_file_path, sheet_name="Sheet1")
+    df["Ticket Code"] = df["Ticket Type"].apply(lambda x: ticket_type_unify(x, True))
+    df.to_excel(excel_file_path.replace(".xlsx", "-code.xlsx"), index=False)
+
+make_badge_type_code("./history/523/523_cleaned.xlsx")

@@ -69,7 +69,7 @@ def phone_number_process(phone_number) -> str:
     return ''.join(e for e in phone_number if e.isalnum() or e.isspace() or e == "+" or e == "(" or e == ")")
 
 
-def ticket_type_unify(t_type: str) -> str:
+def ticket_type_unify(t_type: str, short_mode: bool = False) -> str:
     t_type = str(t_type).lower()
     return_result = None
 
@@ -80,38 +80,66 @@ def ticket_type_unify(t_type: str) -> str:
         return_result = "VIP"
     elif "booth type" in t_type:
         return_result = "General Admission 3-Day"
+        if short_mode:
+            return_result = "GA3"
     elif "all access" in t_type or "aa" in t_type:
         return_result = "All Access"
+        if short_mode:
+            return_result = "AA"
     elif "general admission" in t_type or "ga" in t_type or "general access" in t_type:
         if "1" in t_type:
             return_result = "General Admission 1-Day"
+            if short_mode:
+                return_result = "GA1"
         elif "2" in t_type:
             return_result = "General Admission 2-Day"
+            if short_mode:
+                return_result = "GA2"
         elif "3" in t_type or "sponsor" in t_type or "exhibitor" in t_type or "invited" in t_type:
             return_result = "General Admission 3-Day"
+            if short_mode:
+                return_result = "GA3"
         else:
             print(f"Unknown Ticket Type: {t_type}")
     elif "earlybird" in t_type:
         if "1day" in t_type:
             return_result = "General Admission 1-Day"
+            if short_mode:
+                return_result = "GA1"
         elif "2day" in t_type:
             return_result = "General Admission 2-Day"
+            if short_mode:
+                return_result = "GA2"
         elif "3day" in t_type:
             return_result = "General Admission 3-Day"
+            if short_mode:
+                return_result = "GA3"
         elif "booth" in t_type:
             return_result = "General Admission 3-Day"
+            if short_mode:
+                return_result = "GA3"
     elif "media" in t_type:
         return_result = "Media Partner"
+        if short_mode:
+            return_result = "Media"
     elif "speaker" in t_type:
         return_result = "Speaker"
+        if short_mode:
+            return_result = "Speaker"
     elif "staff" in t_type:
         return_result = "Staff"
+        if short_mode:
+            return_result = "Staff"
     elif "vc" in t_type:
         return_result = "VC"
+        if short_mode:
+            return_result = "VC"
     elif "accessories" in t_type:
         return_result = ""
     elif "edu" in t_type:
         return_result = "General Admission 3-Day"
+        if short_mode:
+            return_result = "GA3"
     else:
         print(f"Unknown Ticket Type: {t_type}")
     print(f"{t_type} -> {return_result}")
