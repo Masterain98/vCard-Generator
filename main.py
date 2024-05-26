@@ -213,7 +213,12 @@ if __name__ == "__main__":
     df.rename(columns={"phone_number": "Phone"}, inplace=True)
     df.rename(columns={"email": "Email"}, inplace=True)
     df["Ticket Type"] = df["Ticket Type"].apply(lambda x: ticket_type_unify(x))
-    luma_df = df[['index', 'First Name', 'Last Name', 'Email', 'Phone', 'Job Title', 'Company', 'Ticket Type']]
+    df['Github Profile'] = None
+    df['LinkedIn Profile'] = None
+    df['Twitter Handle'] = None
+    df['Website'] = None
+    luma_df = df[['index', 'First Name', 'Last Name', 'Email', 'Phone', 'Job Title', 'Company', 'Ticket Type',
+                  "Github Profile", "LinkedIn Profile", "Twitter Handle", "Website"]]
     luma_df.to_csv("./cache/luma_slim.csv", index=False)
 
     # eventbrite
@@ -227,11 +232,15 @@ if __name__ == "__main__":
     eb_df.to_csv("./cache/eventbrite_slim.csv", index=False)
 
     # Data Cleaning
-    aio_df = pd.concat([pd.read_csv("./cache/eventbrite_slim.csv"), pd.read_csv("./cache/luma_slim.csv")])
+    eb_df.reset_index(inplace=True, drop=True)
+    luma_df.reset_index(inplace=True, drop=True)
+    aio_df = pd.concat([eb_df, luma_df], ignore_index=True)
     aio_df['First Name'] = df['First Name'].apply(lambda x: remove_special_characters(x))
     aio_df['Last Name'] = df['Last Name'].apply(lambda x: remove_special_characters(x))
     aio_df['Phone'] = df['Phone'].apply(lambda x: phone_number_process(x))
     aio_df['Ticket Type'] = df['Ticket Type'].apply(lambda x: ticket_type_unify(x))
+    aio_df.to_csv("./cache/aio_slim.csv", index=False)
+    exit(0)
 
     # Genmall
     """
